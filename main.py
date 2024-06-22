@@ -39,8 +39,8 @@ class Player:
     def draw_card(self):
         return self.cards.pop() if self.cards else None
 
-    def add_card(self, new_cards):
-        pass
+    def add_card(self, card):
+        self.cards.append(card)
 
     def has_cards(self):
         return len(self.cards) > 0
@@ -81,33 +81,45 @@ class Game:
         self.players = players
 
     def play(self):
-        while len(players) != 1:
+        turn_amount = 0
+        while len(self.players) != 1:
             print("start")
-            self.__card_pool.clear()
 
-            for player in players:
-                card = player.draw_card()
-                if card:
-                    print(f"Player {player} played: {card}")
-                    self.__card_pool.append((player, card))
-            self.battle()
-            self.players = [player for player in self.players if player.has_cards()]
-            for player in self.players:
-                print(f"Player starts with cards: {player.cards}")
+            self.remove_player_without_cards()
+            self.draw_card_by_players()
+
+            user_who_won = self.battle()
+            self.add_cards_to_winner_of_battle(user_who_won)
+
+            self.__card_pool.clear()
+            turn_amount += 1
+
+        winner = self.players.pop()
+        print(f"won {winner} {len(winner.cards)} with turn of {turn_amount}")
+
+    def remove_player_without_cards(self):
+        self.players = [player for player in self.players if player.has_cards()]
+
+    def draw_card_by_players(self):
+        for player in players:
+            card = player.draw_card()
+            if card:
+                self.__card_pool.append((player, card))
 
     def battle(self):
+        # todo TIE/draw
         for player, card in self.__card_pool:
             print(f"Player {player} card {card.rank}")
 
         highest_card_player, highest_card = max(
             self.__card_pool, key=lambda x: x[1].strength
         )
-        print(
-            f"Player {self.players.index(highest_card_player) + 1} wins this round with {highest_card}"
-        )
-        # print(self.__card_pool)
-        exit()
-        pass
+
+        return highest_card_player
+
+    def add_cards_to_winner_of_battle(self, winner_player):
+        for card_owner, card in self.__card_pool:
+            winner_player.add_card(card)
 
 
 # Example usage
@@ -127,11 +139,5 @@ def create_players(num_players):
 players = create_players(num_players)
 game = Game(players)
 game.play()
-
-
-# num_players = input("How many players play")
-# print(type(deck.cards))
-# print(deck.draw_card())
-
 
 """players numbers VALUE OBJECT"""

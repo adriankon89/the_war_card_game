@@ -1,5 +1,6 @@
 from player import Player
 from deck import Deck
+from number_of_players import NumberOfPlayers
 
 
 class Game:
@@ -99,19 +100,12 @@ class Game:
         self.__stash_card_pool.clear()
 
 
-num_players = 4
+num_players = NumberOfPlayers(4)
+deck = Deck()
 
-
-def create_players(num_players):
-    deck = Deck()
-    deck.shuffle()
-    hands = deck.dealCards(num_players)
-    players = [Player(hand) for hand in hands]
-    return players
-
-
-players = create_players(num_players)
+players = deck.create_players_hand(num_players)
 game = Game(players)
 game.play()
+
 
 """players numbers VALUE OBJECT"""

@@ -1,4 +1,5 @@
 from card import Card
+from player import Player
 
 
 class Deck:
@@ -16,7 +17,7 @@ class Deck:
     def draw_card(self):
         return self.cards.pop() if self.cards else None
 
-    def dealCards(self, num_players):
+    def deal_cards(self, num_players):
         self.shuffle()
         hands = [[] for _ in range(num_players)]
 
@@ -24,3 +25,9 @@ class Deck:
             hands[i % num_players].append(card)
 
         return hands
+
+    def create_players_hand(self, num_players):
+        self.shuffle()
+        hands = self.deal_cards(num_players.number_of_players)
+        players = [Player(hand) for hand in hands]
+        return players
